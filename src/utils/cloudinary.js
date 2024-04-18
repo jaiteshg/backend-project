@@ -16,7 +16,8 @@ const uplodeOnCloudinary = async (localfilePath) => {
             resource_type: "auto"
         } )
         //file has been successfully uploaded
-        console.log("file successfully uploaded" , response.url);
+        //console.log("file successfully uploaded" , response.url);
+        fs.unlinkSync(localfilePath)
         return response;
     } catch (error) {
         fs.unlinkSync(localfilePath)
@@ -25,6 +26,6 @@ const uplodeOnCloudinary = async (localfilePath) => {
     }
  }
 
-export default  uplodeOnCloudinary;
+export {uplodeOnCloudinary};
 
 
