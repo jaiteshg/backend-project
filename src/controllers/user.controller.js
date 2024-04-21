@@ -174,7 +174,7 @@ const logOutUser = asyncHandler(async (req, res) => {
 
 const refreshAccessToken = asyncHandler(async(req, res) => {
     const incomingRefreshToken = req.cookie.refreshToken || req.body.refreshToken 
-    
+    console.log(incomingRefreshToken);
     if (!incomingRefreshToken) {
         throw new ApiError(401, "Unauthenticated access token")
     }
@@ -400,7 +400,7 @@ const getWatchHistory = asyncHandler(async(req, res ) => {
     const user = await User.aggregate([
         {
             $match : {
-                _id : new mongoose.Types.objectId(req.user._id)
+                _id : new mongoose.Types.ObjectId(req.user._id)
             }
         },
         {
