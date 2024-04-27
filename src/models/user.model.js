@@ -1,4 +1,4 @@
-import  mongoose , {Schema} from "mongoose";
+import  mongoose , { Schema } from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
@@ -22,10 +22,18 @@ const userSchema = new Schema({
         required : true,
         trim : true,
         index: true,
+        unique : true,
+        lowercase : true,
     },
     avatar : {
-        type : String,
-        required : true,
+        publicId:{ 
+            type : String,
+            required : true,
+        },
+        url: {
+            type: String,
+            required : true,
+        }
     },
     coverImage : {
         type : String,
@@ -33,15 +41,17 @@ const userSchema = new Schema({
     watchHistory : [
         {
             type : mongoose.Schema.Types.ObjectId,
-            ref : 'Vodeo',
-        }
+            ref : 'Video',
+        },
+        {
+        watchedAt: {
+            type: Date,
+            default: Date.now,
+            }
+       }
     ],
-    password : {
-        type : String,
-        required : [true, 'password is required']
-    },
-    refreshToken : {
-        type : String
+    refreshToken: {
+        type: String,
     }
     
 }, {timestamps: true}
@@ -51,7 +61,7 @@ userSchema.pre("save", async function (next) {
     if (!this.isModified("password")) return next();
 
 	try {
-		this.password = await bcrypt.hash(this.password, 8);
+		this.password = await bcrypt.hash(this.password, 10);
 		next();
 	} catch (error) {
 		return next(error);
@@ -60,16 +70,17 @@ userSchema.pre("save", async function (next) {
 
 
 userSchema.methods.isPasswordCorrect = async function (password) {
-    return await bcrypt.compare(password, this.password)
+    return await bcrypt.compare(password, this.password);
 }
 
 userSchema.methods.generateAccessToken = function(){
     return jwt.sign(
         {
-            _id: this._id,
-            email: this.email,
-            username: this.username,
-            fullName: this.fullName
+            _id : this._id,
+            fullName : this.fullName,
+            email : this.email,
+            username : this.username,
+            
         },
         process.env.ACCESS_TOKEN_SECRET,
         {
